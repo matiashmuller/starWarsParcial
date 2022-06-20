@@ -1,42 +1,21 @@
-import habitantes.*
+import personas.*
 
-class Planeta 
-{
-	const property listPersonas = #{}
-	var property cantMuseos = 0
-	var property longitudMurallas = 0
+class Planeta {
+	const habitantes = []
+	var cantMuseos
+	var longitudMurallas =0
 	
-	method agregarPersonas(unaPersona){
-		listPersonas.add(unaPersona)
-	}
-	
-	method quitarPersonas(unaPersona){
-		listPersonas.remove(unaPersona)
-	}
-	
-	method delegacionDiplomatica() = listPersonas.filter{ p => p.esDestacada() }
-	method valorInicialDeDefensa() = listPersonas.count{ p => p.potencia() >= 30 }
-	method esCulto() = (cantMuseos >= 2) and (listPersonas.all{ p => p.inteligencia() >= 10})
-	method potenciaReal() = listPersonas.sum{ p => p.potencia() }
-	method potenciaAparente() = listPersonas.max({ p => p.potencia()}).potencia() * listPersonas.size()
-	method habitantesValiosos() = listPersonas.filter{ p => p.valor() >= 40}
-	method necesitaReforzarse() = self.potenciaAparente() * 2 >= self.potenciaReal()
-	
-	
-	method construirMurallas(cantKm) {
-		longitudMurallas += cantKm
-	}
-	
-	method fundarUnMuseo(){
-		cantMuseos += 1
-	}
-	
-	method recibirTributos(){
-		listPersonas.forEach( {p => p.enviarTributo(self)} )
-	}
-	
-	method apaciguarA(otroPlaneta){
-		self.habitantesValiosos().forEach( {p => p.enviarTributo(otroPlaneta)} )
-	}
-	
+	method agregarHabitantes(habs) { habitantes.addAll(habs) }
+	method delegacionDiplomatica() = habitantes.filter{h=>h.esDestacada()}.asSet()
+	method valorInicialDefensa() = habitantes.count{h=>h.potencia()>= 30}
+	method esCulto() = cantMuseos>=2 && habitantes.all{h=>h.inteligencia()>= 10}
+	method potenciaReal() = habitantes.sum{h=>h.potencia()}
+	method construirMurallas(cant) {longitudMurallas+=cant}
+	method fundarMuseo() {cantMuseos++}
+	method potenciaAparente() = self.potDelMasPotente() *habitantes.size()
+	method potDelMasPotente() = habitantes.max({h=>h.potencia()}).potencia()
+	method necesitaReforzarse() = self.potenciaAparente() >= self.potenciaReal()*2
+	method recibirTributos() = habitantes.forEach{h=>h.ofrecerTributoA(self)} 
+	method habitantesValiosos() = habitantes.filter{h=>h.valor()>=40}
+	method apaciguar(planeta) = self.habitantesValiosos().forEach{h=>h.ofrecerTributoA(planeta)}
 }
